@@ -12,7 +12,7 @@ export class UserStore {
   async fetchUsers() {
     this.loading = true
     try {
-      const response = await fetch("http://localhost:3000/")
+      const response = await fetch("http://10.0.2.2:3000/")
       const data: UserData[] = await response.json()
       runInAction(() => {
         this.users = data.filter(item => item.user.age >= 0)
