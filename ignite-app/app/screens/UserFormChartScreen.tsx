@@ -29,7 +29,7 @@ export default function UserFormChartScreen() {
   }
 
   const chartWidth = Dimensions.get("window").width - 32
-  const chartHeight = 180
+  const chartHeight = 200
   const paddingHorizontal = 40
   const paddingVertical = 20
 
@@ -62,7 +62,7 @@ export default function UserFormChartScreen() {
               {
                 data: chartPoints,
                 color: () => "#fff",
-                strokeWidth: 3,
+                strokeWidth: 1,
               },
               {
                 data: [chartMin, chartMax],
@@ -104,12 +104,12 @@ export default function UserFormChartScreen() {
                     position: "absolute",
                     left: getX(index) - 8,
                     top: getY(value) - 8,
-                    width: 16,
-                    height: 16,
+                    width: 8,
+                    height: 8,
                     borderRadius: 8,
                     borderWidth: 3,
+                    backgroundColor: value >= 0 ? "#00ff80" : "#fff",
                     borderColor: value >= 0 ? "#00ff80" : "#fff",
-                    backgroundColor: "#2c3942",
                     zIndex: 10,
                   }}
                 />
@@ -117,9 +117,9 @@ export default function UserFormChartScreen() {
               <View
                 style={{
                   position: "absolute",
-                  left: paddingHorizontal,
+                  left: 65,
                   width: chartWidth - 2 * paddingHorizontal,
-                  top: getY(0) - 1,
+                  top: getY(0) - 10,
                   borderTopWidth: 3,
                   borderStyle: "dotted",
                   borderColor: "#fff",
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   chartContainer: {
-    backgroundColor: "#22313a",
+    backgroundColor: "#2c3942",
     borderRadius: 24,
     padding: 12,
     marginVertical: 8,
