@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite"
 import { FC } from "react"
-import { Image, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
+import { Image, ImageStyle, TextStyle, View, ViewStyle, ScrollView } from "react-native"
 import { Button, Text, Screen } from "@/components"
 import { isRTL } from "@/i18n"
 import { useStores } from "../models"
@@ -17,7 +17,6 @@ interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen(_props) {
   const { themed, theme } = useAppTheme()
-
   const { navigation } = _props
   const {
     authenticationStore: { logout },
@@ -43,54 +42,60 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
 
   return (
     <Screen preset="fixed" contentContainerStyle={$styles.flex1}>
-      <View style={themed($topContainer)}>
-        <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
-        <Text
-          testID="welcome-heading"
-          style={themed($welcomeHeading)}
-          tx="welcomeScreen:readyForLaunch"
-          preset="heading"
-        />
-        <Text tx="welcomeScreen:exciting" preset="subheading" />
-        <Image
-          style={$welcomeFace}
-          source={welcomeFace}
-          resizeMode="contain"
-          tintColor={theme.colors.palette.neutral900}
-        />
-      </View>
+      <ScrollView contentContainerStyle={themed($scrollContainer)} bounces={false}>
+        <View style={themed($topContainer)}>
+          <Image style={themed($welcomeLogo)} source={welcomeLogo} resizeMode="contain" />
+          <Text
+            testID="welcome-heading"
+            style={themed($welcomeHeading)}
+            tx="welcomeScreen:readyForLaunch"
+            preset="heading"
+          />
+          <Text tx="welcomeScreen:exciting" preset="subheading" />
+          <Image
+            style={$welcomeFace}
+            source={welcomeFace}
+            resizeMode="contain"
+            tintColor={theme.colors.palette.neutral900}
+          />
+        </View>
 
-      <View style={themed([$bottomContainer, $bottomContainerInsets])}>
-        <Text tx="welcomeScreen:postscript" size="md" />
+        <View style={themed([$bottomContainer, $bottomContainerInsets])}>
+          <Text tx="welcomeScreen:postscript" size="md" />
 
-        <Button
-          testID="next-screen-button"
-          preset="reversed"
-          tx="welcomeScreen:letsGo"
-          onPress={goNext}
-        />
+          <Button
+            testID="next-screen-button"
+            preset="reversed"
+            tx="welcomeScreen:letsGo"
+            onPress={goNext}
+          />
 
-        <Button
-          text="Go to User List"
-          onPress={goToUserList}
-          style={{ marginTop: 16 }}
-        />
+          <Button
+            text="Go to User List"
+            onPress={goToUserList}
+            style={{ marginTop: 16 }}
+          />
 
-        <Button
-          text="Go to User List Timer"
-          onPress={() => navigation.navigate("UserListTimer")}
-          style={{ marginTop: 16 }}
-        />
-        
-        <Button
-          text="Go to User Form & Chart"
-          onPress={() => navigation.navigate("UserFormChart")}
-          style={{ marginTop: 16 }}
-        />
-        
-      </View>
+          <Button
+            text="Go to User List Timer"
+            onPress={() => navigation.navigate("UserListTimer")}
+            style={{ marginTop: 16 }}
+          />
+
+          <Button
+            text="Go to User Form & Chart"
+            onPress={() => navigation.navigate("UserFormChart")}
+            style={{ marginTop: 16, marginBottom: 16 }}
+          />
+        </View>
+      </ScrollView>
     </Screen>
   )
+})
+
+const $scrollContainer: ThemedStyle<ViewStyle> = () => ({
+  flexGrow: 1,
+  justifyContent: "space-between",
 })
 
 const $topContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
@@ -109,7 +114,7 @@ const $bottomContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
   paddingHorizontal: spacing.lg,
-  justifyContent: "space-around",
+  paddingTop: spacing.xl,
 })
 
 const $welcomeLogo: ThemedStyle<ImageStyle> = ({ spacing }) => ({
