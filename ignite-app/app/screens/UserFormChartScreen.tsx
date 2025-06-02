@@ -82,9 +82,9 @@ export default function UserFormChartScreen() {
           fromZero={false}
           segments={4}
           chartConfig={{
-            backgroundColor: "#2c3942",
-            backgroundGradientFrom: "#2c3942",
-            backgroundGradientTo: "#2c3942",
+            backgroundColor: "#22313a",
+            backgroundGradientFrom: "#22313a",
+            backgroundGradientTo: "#22313a",
             decimalPlaces: 0,
             color: () => "#fff",
             labelColor: () => "#fff",
@@ -102,7 +102,7 @@ export default function UserFormChartScreen() {
                   key={index}
                   style={{
                     position: "absolute",
-                    left: getX(index) - 8,
+                    left: getX(index) + 10,
                     top: getY(value) - 8,
                     width: 8,
                     height: 8,
@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     flex: 3,
     padding: 16,
     justifyContent: "center",
+    paddingBottom: 50
   },
   historyTopRow: {
     flexDirection: "row",
@@ -305,6 +306,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 16,
+    paddingBottom: 50
   },
   historyPoints: {
     color: "#00ff80",
