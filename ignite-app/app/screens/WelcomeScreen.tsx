@@ -76,6 +76,12 @@ export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeSc
           style={{ marginTop: 16 }}
         />
         
+        <Button
+          text="Go to User List Timer"
+          onPress={() => navigation.navigate("UserListTimer")}
+          style={{ marginTop: 16 }}
+        />
+        
       </View>
     </Screen>
   )
