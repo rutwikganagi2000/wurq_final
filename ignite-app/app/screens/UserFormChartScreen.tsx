@@ -1,5 +1,5 @@
-import React, { useState } from "react"
-import { View, Text, TextInput, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image } from "react-native"
+import React, { useRef, useState } from "react"
+import { View, Text, TextInput, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Image, Keyboard } from "react-native"
 import { LineChart } from "react-native-chart-kit"
 import Icon from "react-native-vector-icons/FontAwesome"
 
@@ -10,20 +10,22 @@ const initialForm = {
   name: "WOD Newton",
 }
 
-const chartPoints = [15, -5, -8, 9, 10, 5, -3, 11]
+const chartPoints = [15, -3, -6, 9, 10, 5, -2, 11]
 const chartMin = -20
 const chartMax = 20
 
 export default function UserFormChartScreen() {
   const [form, setForm] = useState(initialForm)
   const [cardData, setCardData] = useState(initialForm)
+  const nameInputRef = useRef<TextInput>(null)
 
   const handleChange = (field: keyof typeof initialForm, value: string) => {
     setForm({ ...form, [field]: value })
   }
 
   const handleSubmit = () => {
-    setCardData({ ...form }) 
+    setCardData({ ...form })
+    Keyboard.dismiss()
   }
 
   const chartWidth = Dimensions.get("window").width - 32
@@ -31,6 +33,12 @@ export default function UserFormChartScreen() {
   const paddingHorizontal = 40
   const paddingVertical = 20
 
+  const getX = (index: number) => {
+    return (
+      paddingHorizontal +
+      (index * (chartWidth - 2 * paddingHorizontal)) / (chartPoints.length - 1)
+    )
+  }
   const getY = (value: number) => {
     return (
       ((chartMax - value) / (chartMax - chartMin)) * (chartHeight - 2 * paddingVertical) +
@@ -39,9 +47,10 @@ export default function UserFormChartScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <Image source={wurqLogo} style={styles.logoImage} resizeMode="contain" />
+        <View style={styles.thickBlackLine} />
       </View>
 
       <View style={styles.chartContainer}>
@@ -52,8 +61,8 @@ export default function UserFormChartScreen() {
             datasets: [
               {
                 data: chartPoints,
-                color: () => "#00ff80",
-                strokeWidth: 2,
+                color: () => "#fff",
+                strokeWidth: 3,
               },
               {
                 data: [chartMin, chartMax],
@@ -88,36 +97,30 @@ export default function UserFormChartScreen() {
           style={styles.chart}
           decorator={() => (
             <>
-              {chartPoints.map((value, index) => {
-                const x =
-                  paddingHorizontal +
-                  (index * (chartWidth - 2 * paddingHorizontal)) / (chartPoints.length - 1)
-                const y = getY(value)
-                return (
-                  <View
-                    key={index}
-                    style={{
-                      position: "absolute",
-                      left: x - 7,
-                      top: y - 7,
-                      width: 14,
-                      height: 14,
-                      borderRadius: 7,
-                      backgroundColor: value >= 0 ? "#00ff80" : "#fff",
-                      borderWidth: 2,
-                      borderColor: "#fff",
-                      zIndex: 10,
-                    }}
-                  />
-                )
-              })}
+              {chartPoints.map((value, index) => (
+                <View
+                  key={index}
+                  style={{
+                    position: "absolute",
+                    left: getX(index) - 8,
+                    top: getY(value) - 8,
+                    width: 16,
+                    height: 16,
+                    borderRadius: 8,
+                    borderWidth: 3,
+                    borderColor: value >= 0 ? "#00ff80" : "#fff",
+                    backgroundColor: "#2c3942",
+                    zIndex: 10,
+                  }}
+                />
+              ))}
               <View
                 style={{
                   position: "absolute",
                   left: paddingHorizontal,
                   width: chartWidth - 2 * paddingHorizontal,
                   top: getY(0) - 1,
-                  borderTopWidth: 2,
+                  borderTopWidth: 3,
                   borderStyle: "dotted",
                   borderColor: "#fff",
                   zIndex: 1,
@@ -133,7 +136,12 @@ export default function UserFormChartScreen() {
         <View style={styles.historyLeft}>
           <View style={styles.historyTopRow}>
             <Text style={styles.historyDate}>7/30/2022</Text>
-            <Icon name="heart" size={20} color="#ff2d55" style={styles.heartIcon} />
+            <Icon
+              name="heart-o"
+              size={22}
+              color="#ff2d55"
+              style={styles.heartIcon}
+            />
           </View>
           <View style={styles.centeredCardContent}>
             <Text style={styles.historyWod}>{cardData.name}</Text>
@@ -162,20 +170,28 @@ export default function UserFormChartScreen() {
           value={form.points}
           onChangeText={v => handleChange("points", v.replace(/[^0-9]/g, ""))}
           keyboardType="numeric"
+          returnKeyType="next"
+          blurOnSubmit={false}
+          onSubmitEditing={() => nameInputRef.current?.focus()}
         />
         <Text style={styles.inputLabel}>Name</Text>
         <TextInput
+          ref={nameInputRef}
           style={styles.input}
           value={form.name}
           onChangeText={v => handleChange("name", v)}
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
         />
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <TouchableOpacity style={styles.submitButton} onPressIn={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   )
 }
+
+const FORM_WIDTH = 320
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -188,11 +204,20 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     paddingVertical: 16,
+    marginBottom: 0,
   },
   logoImage: {
     width: 120,
     height: 40,
-    marginBottom: 4,
+    marginBottom: 8,
+  },
+  thickBlackLine: {
+    width: 420,
+    height: 6,
+    backgroundColor: "#111",
+    borderRadius: 3,
+    marginTop: 4,
+    marginBottom: 8,
   },
   chartContainer: {
     backgroundColor: "#22313a",
@@ -210,8 +235,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     marginBottom: 8,
-    marginLeft: 8,
-    alignSelf: "center",
+    marginLeft: 15,
   },
   sectionTitleLeft: {
     color: "#fff",
@@ -257,14 +281,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 18,
     marginBottom: 8,
-    textAlign: "center",
     width: "100%",
   },
   historyRow: {
     flexDirection: "row",
-    alignItems: "center",
     flexWrap: "wrap",
-    justifyContent: "center",
     width: "100%",
   },
   historyLabel: {
@@ -300,12 +321,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   formContainer: {
-    width: Dimensions.get("window").width - 32,
+    width: FORM_WIDTH,
+    maxWidth: "90%",
     marginTop: 24,
-    backgroundColor: "#22313a",
+    backgroundColor: "#2c3942",
     borderRadius: 16,
     padding: 16,
     alignItems: "center",
+    alignSelf: "center",
   },
   inputLabel: {
     color: "#fff",
@@ -322,7 +345,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
     width: "100%",
-    textAlign: "center",
   },
   submitButton: {
     backgroundColor: "#fff",
